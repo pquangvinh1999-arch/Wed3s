@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3S Shoe Care - Premium System</title>
+    <title>3S Shoe Care - System</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,420 +14,527 @@
         :root {
             --primary: #0284c7;
             --primary-light: #38bdf8;
-            --glass-bg: rgba(255, 255, 255, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.8);
+            --accent: #f43f5e;
+            --glass: rgba(255, 255, 255, 0.7);
         }
 
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
             color: #0f172a;
-            overflow: hidden; 
-            height: 100vh; width: 100vw;
+            overflow: hidden; height: 100vh; width: 100vw;
         }
 
+        /* GLASSMORPHISM 2.0 */
         .glass-panel { 
-            background: var(--glass-bg); 
-            backdrop-filter: blur(25px); 
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border); 
+            background: var(--glass); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8); 
             box-shadow: 0 10px 40px rgba(2, 132, 199, 0.1);
         }
 
-        /* 1. HIỆU ỨNG LOGO ÁNH KIM & TỰ XÓA PHÔNG */
+        /* LOGO HIGH-END ANIMATION */
+        .logo-container { position: relative; width: 160px; margin: 0 auto; }
         .logo-img {
-            width: 100%;
-            max-width: 160px;
-            margin: 0 auto;
-            display: block;
-            mix-blend-mode: multiply; /* Triệt tiêu nền trắng của ảnh */
-            animation: floatGlow 3s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            width: 100%; display: block;
+            mix-blend-mode: multiply; 
+            animation: logoSway 4s infinite ease-in-out;
+            filter: drop-shadow(0 10px 15px rgba(2, 132, 199, 0.3));
         }
-        /* Tạo quầng sáng nhịp đập đằng sau logo */
-        @keyframes floatGlow {
-            0% { transform: translateY(0); filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.4)); }
-            100% { transform: translateY(-5px); filter: drop-shadow(0 0 25px rgba(2, 132, 199, 0.8)) brightness(1.1); }
+        @keyframes logoSway {
+            0%, 100% { transform: rotate(-2deg) translateY(0); }
+            50% { transform: rotate(2deg) translateY(-5px); }
+        }
+        .logo-shine {
+            position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.8), transparent);
+            transform: skewX(-25deg);
+            animation: shine 3s infinite;
+            pointer-events: none;
+        }
+        @keyframes shine { 
+            0% { left: -100%; } 
+            20% { left: 150%; } 
+            100% { left: 150%; } 
         }
 
-        /* 2. SLIDESHOW BACKGROUND CHO LANDING PAGE */
-        .bg-slider {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            opacity: 0.15; /* Làm mờ để không rối chữ */
+        /* SLIDER CÂN ĐỐI */
+        .bg-slider-container {
+            position: absolute; inset: 0; z-index: -1;
+            overflow: hidden;
+        }
+        .bg-slide {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
             background-size: cover;
             background-position: center;
-            transition: background-image 1s ease-in-out;
+            opacity: 0; transition: opacity 1s ease-in-out;
+        }
+        .bg-slide.active { opacity: 0.2; }
+
+        /* MENU ĐỘC ĐÁO */
+        .nav-item {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 16px;
+        }
+        .nav-item.active {
+            background: white;
+            color: var(--primary);
+            transform: scale(1.05) translateX(10px);
+            box-shadow: 0 10px 20px rgba(2, 132, 199, 0.15);
+            border-left: 4px solid var(--primary);
         }
 
-        /* Menu PC & Mobile (Giữ nguyên sự tinh tế) */
-        .menu-item { transition: all 0.4s ease; position: relative; }
-        @media (min-width: 768px) {
-            .menu-item.active { background: white; transform: translateX(10px); box-shadow: -5px 10px 20px rgba(2,132,199,0.1); color: var(--primary); }
-            .menu-item:hover:not(.active) { transform: translateX(5px); background: rgba(255,255,255,0.6); }
-        }
-        @media (max-width: 767px) {
-            .menu-item { flex-direction: column; font-size: 0.65rem; padding: 0.5rem; }
-            .menu-item.active { 
-                transform: translateY(-15px); background: white; border-radius: 50%;
-                width: 60px; height: 60px; justify-content: center;
-                box-shadow: 0 10px 20px rgba(2,132,199,0.2); border: 2px solid #bae6fd;
-            }
-            .menu-item.active span { display: none; }
-        }
-
-        .icon-cute { transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .menu-item.active .icon-cute { transform: scale(1.3) rotate(-10deg); color: var(--primary); }
-
-        .tab-content { display: none; animation: slideUpFade 0.4s ease forwards; }
-        .tab-content.active { display: block; }
-        @keyframes slideUpFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        .card-3d {
+        /* ANIMATION CHỌN DỊCH VỤ */
+        .service-card {
             transition: all 0.3s ease;
-            background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.6));
-            border: 1px solid rgba(255,255,255,0.9);
+            cursor: pointer;
+            position: relative;
         }
-        .card-3d:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(2,132,199,0.15); border-color: var(--primary-light); }
+        .service-card.selected {
+            background: #e0f2fe;
+            border-color: var(--primary);
+            transform: scale(0.95);
+        }
+        .service-card.selected::after {
+            content: '\f058'; 
+            font-family: 'Font Awesome 6 Free'; font-weight: 900;
+            position: absolute; top: 10px; right: 10px;
+            color: var(--primary); font-size: 1.2rem;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
 
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-thumb { background: rgba(2,132,199,0.4); border-radius: 10px; }
+        .tab-content { display: none; animation: slideUp 0.4s ease forwards; }
+        .tab-content.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* MOBILE NAV */
+        @media (max-width: 767px) {
+            .mobile-nav {
+                position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+                width: 90%; height: 70px; z-index: 100;
+            }
+            .mobile-nav .nav-item.active {
+                transform: translateY(-20px) scale(1.1);
+                background: white; border-radius: 50%; width: 60px; height: 60px;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
-<body class="flex flex-col md:flex-row p-0 md:p-4 gap-4 relative">
+<body class="flex flex-col md:flex-row p-0 md:p-4 gap-4">
 
-    <!-- ==================== VIEW 0: MÀN HÌNH ĐĂNG NHẬP (BẢO MẬT LINK GỐC) ==================== -->
+    <!-- ==================== MÀN HÌNH ĐĂNG NHẬP (ADMIN) ==================== -->
     <div id="login-view" class="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-br from-sky-100 to-blue-200 hidden">
-        <div class="glass-panel p-10 rounded-[32px] w-full max-w-sm text-center shadow-2xl relative overflow-hidden">
-            <div class="absolute -top-20 -right-20 w-40 h-40 bg-sky-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-pulse"></div>
-            
-            <img src="logo.png" alt="3S Logo" class="logo-img mb-6 max-w-[140px]">
-            <h2 class="text-2xl font-bold text-slate-800 mb-2">Hệ Thống Quản Lý</h2>
-            <p class="text-sm text-slate-500 mb-8">Vui lòng đăng nhập để tiếp tục</p>
-
-            <input type="text" id="username" placeholder="Tên đăng nhập" class="w-full px-4 py-3 rounded-xl border border-white focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none bg-white/70 mb-4 font-semibold text-slate-700">
-            <input type="password" id="password" placeholder="Mật khẩu" class="w-full px-4 py-3 rounded-xl border border-white focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none bg-white/70 mb-8 font-semibold text-slate-700" onkeypress="if(event.key === 'Enter') handleLogin()">
-            
-            <button onclick="handleLogin()" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition all">ĐĂNG NHẬP</button>
+        <div class="glass-panel p-10 rounded-[40px] w-full max-w-sm text-center shadow-2xl">
+            <div class="logo-container mb-6">
+                <img src="logo.png" class="logo-img">
+                <div class="logo-shine"></div>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800 mb-6">Hệ Thống 3S</h2>
+            <input type="text" id="user" placeholder="Username" class="w-full px-4 py-3 rounded-2xl border-none bg-white/60 mb-4 outline-none ring-1 ring-sky-200 focus:ring-2 focus:ring-sky-500 transition font-semibold">
+            <input type="password" id="pass" placeholder="Password" class="w-full px-4 py-3 rounded-2xl border-none bg-white/60 mb-8 outline-none ring-1 ring-sky-200 focus:ring-2 focus:ring-sky-500 transition font-semibold">
+            <button onclick="doLogin()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-xl hover:bg-slate-900 transition-all active:scale-95">ĐĂNG NHẬP</button>
         </div>
     </div>
 
-    <!-- ==================== VIEW 1: LANDING PAGE ĐẶT HÀNG (DÀNH CHO KHÁCH CÓ LINK) ==================== -->
-    <div id="landing-view" class="fixed inset-0 z-50 overflow-y-auto w-full h-full flex flex-col items-center py-10 px-4 transition-all duration-500 hidden">
-        
-        <!-- Hình nền Slideshow thay đổi liên tục -->
-        <div id="bg-slider" class="bg-slider"></div>
-        <!-- Lớp mờ Glass -->
+    <!-- ==================== LANDING PAGE ĐẶT HÀNG (VIEW KHÁCH) ==================== -->
+    <div id="landing-view" class="fixed inset-0 z-50 overflow-y-auto w-full h-full flex flex-col items-center py-10 px-4 hidden">
+        <div class="bg-slider-container" id="slider"></div>
         <div class="absolute inset-0 bg-white/40 backdrop-blur-md z-[-1]"></div>
 
-        <!-- Thông tin liên hệ góc phải (Có Click-to-call) -->
-        <div class="absolute top-4 right-4 text-right opacity-80 hover:opacity-100 transition duration-300 bg-white/50 p-2 rounded-xl backdrop-blur-md">
-            <p class="text-[11px] font-bold text-slate-600 tracking-wider uppercase"><i class="fa-solid fa-location-dot text-sky-500"></i> P. Long Nguyên, TP. HCM</p>
-            <a href="tel:0382878953" class="text-sm font-bold text-sky-700 hover:text-sky-500 block"><i class="fa-solid fa-phone text-sky-500 animate-bounce"></i> 0382.878.953</a>
+        <div class="absolute top-4 right-4 text-right bg-white/50 p-3 rounded-2xl backdrop-blur-sm shadow-sm">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest"><i class="fa-solid fa-location-dot text-sky-500 mr-1"></i> P. Long Nguyên, TP. HCM</p>
+            <a href="tel:0382878953" class="text-sm font-extrabold text-sky-700 hover:text-sky-500 transition"><i class="fa-solid fa-phone mr-1"></i> 0382.878.953</a>
         </div>
 
-        <img src="logo.png" alt="3S Logo" class="logo-img mb-6 mt-12 md:mt-0 max-w-[200px]">
+        <div class="logo-container mb-6 mt-10">
+            <img src="logo.png" class="logo-img">
+            <div class="logo-shine"></div>
+        </div>
         
-        <h1 class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-700 to-blue-900 mb-2 text-center drop-shadow-sm">Trải Nghiệm Chăm Sóc Giày 3S</h1>
-        <p class="text-sm text-slate-600 mb-8 font-bold bg-white/50 px-4 py-1 rounded-full">Vui lòng nhập thông tin để hệ thống tư vấn</p>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-center text-slate-800 mb-2 leading-tight">Đặt Lịch Chăm Sóc Giày <span class="text-sky-600">3S</span></h1>
+        <p class="text-sm text-slate-500 mb-10 font-medium">Điền thông tin để 3S chăm sóc đôi giày của bạn tốt nhất</p>
 
-        <!-- Form Đặt Đơn -->
-        <div id="booking-step-1" class="glass-panel p-8 rounded-3xl w-full max-w-md shadow-xl border-white">
-            <div class="mb-4">
-                <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Số điện thoại của bạn</label>
-                <div class="relative">
-                    <i class="fa-solid fa-phone absolute left-4 top-3.5 text-sky-500"></i>
-                    <input type="tel" id="cus-phone" placeholder="VD: 0909..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-white focus:border-sky-500 focus:ring-4 focus:ring-sky-200 outline-none bg-white/90 transition font-bold text-slate-700">
+        <div id="step-1" class="glass-panel p-8 rounded-[32px] w-full max-w-md shadow-2xl border-white">
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Số điện thoại</label>
+                    <input type="tel" id="cus-phone" placeholder="09xx..." class="w-full px-4 py-3 rounded-xl border-none bg-white/80 ring-1 ring-sky-100 focus:ring-2 focus:ring-sky-500 outline-none font-bold">
                 </div>
-            </div>
-            <div class="mb-8">
-                <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Tên của bạn</label>
-                <div class="relative">
-                    <i class="fa-solid fa-user absolute left-4 top-3.5 text-sky-500"></i>
-                    <input type="text" id="cus-name" placeholder="Tên để 3S xưng hô" class="w-full pl-10 pr-4 py-3 rounded-xl border border-white focus:border-sky-500 focus:ring-4 focus:ring-sky-200 outline-none bg-white/90 transition font-bold text-slate-700">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Tên khách hàng</label>
+                    <input type="text" id="cus-name" placeholder="Nhập tên bạn" class="w-full px-4 py-3 rounded-xl border-none bg-white/80 ring-1 ring-sky-100 focus:ring-2 focus:ring-sky-500 outline-none font-bold">
                 </div>
+                <button onclick="toStep2()" class="w-full bg-sky-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-sky-200 hover:bg-sky-700 transition-all active:scale-95">TIẾP TỤC CHỌN DỊCH VỤ <i class="fa-solid fa-chevron-right ml-2"></i></button>
             </div>
-            <button onclick="showServices()" class="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-sky-500/40 hover:shadow-sky-500/60 hover:-translate-y-1 transition all">
-                BẮT ĐẦU CHỌN DỊCH VỤ <i class="fa-solid fa-arrow-right ml-2"></i>
-            </button>
         </div>
 
-        <!-- Màn hình Dịch vụ -->
-        <div id="booking-step-2" class="hidden w-full max-w-4xl mt-6">
-            <div class="flex justify-between items-end mb-6 glass-panel p-4 rounded-2xl">
-                <div>
-                    <h2 class="text-xl font-bold text-slate-800">Xin chào, <span id="display-cus-name" class="text-sky-600">Khách hàng</span>!</h2>
-                    <p class="text-sm text-slate-600 font-medium">Hãy chọn các dịch vụ bạn cần cho đôi giày của mình.</p>
-                </div>
-                <button onclick="location.reload()" class="text-sm text-rose-500 font-bold bg-white/80 px-3 py-1 rounded-lg"><i class="fa-solid fa-rotate-left"></i> Đổi tên</button>
+        <div id="step-2" class="hidden w-full max-w-4xl mt-6">
+            <div class="glass-panel p-5 rounded-2xl mb-6 flex justify-between items-center">
+                <p class="font-bold text-slate-700">Chào <span id="show-name" class="text-sky-600">Khách hàng</span>, chọn dịch vụ nhé!</p>
+                <button onclick="location.reload()" class="text-xs font-bold text-rose-500">Sửa thông tin</button>
             </div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div class="card-3d p-5 rounded-2xl cursor-pointer hover:bg-sky-50 active:scale-95" onclick="toggleService(this)">
-                    <i class="fa-solid fa-soap text-2xl text-sky-500 mb-2 block"></i><h3 class="font-bold text-slate-800 text-sm">Vệ sinh 3S chuyên sâu</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="service-grid">
+                <!-- Dịch vụ -->
+                <div class="service-card glass-panel p-5 rounded-2xl text-center" onclick="toggleSvc(this, 'Vệ sinh 3S', 200000)">
+                    <i class="fa-solid fa-soap text-2xl text-sky-500 mb-2 block"></i><h3 class="font-bold text-sm">Vệ sinh 3S</h3><p class="text-[10px] text-slate-400">80.000đ</p>
                 </div>
-                <div class="card-3d p-5 rounded-2xl cursor-pointer hover:bg-sky-50 active:scale-95" onclick="toggleService(this)">
-                    <i class="fa-solid fa-droplet-slash text-2xl text-amber-500 mb-2 block"></i><h3 class="font-bold text-slate-800 text-sm">Tẩy ố đế & Upper</h3>
+                <div class="service-card glass-panel p-5 rounded-2xl text-center" onclick="toggleSvc(this, 'Tẩy ố', 100000)">
+                    <i class="fa-solid fa-droplet-slash text-2xl text-amber-500 mb-2 block"></i><h3 class="font-bold text-sm">Tẩy ố</h3><p class="text-[10px] text-slate-400">100.000đ</p>
                 </div>
-                <div class="card-3d p-5 rounded-2xl cursor-pointer hover:bg-sky-50 active:scale-95" onclick="toggleService(this)">
-                    <i class="fa-solid fa-layer-group text-2xl text-indigo-500 mb-2 block"></i><h3 class="font-bold text-slate-800 text-sm">Bảo dưỡng & Xử lý keo</h3>
+                <div class="service-card glass-panel p-5 rounded-2xl text-center" onclick="toggleSvc(this, 'Xử lý keo', 150000)">
+                    <i class="fa-solid fa-layer-group text-2xl text-indigo-500 mb-2 block"></i><h3 class="font-bold text-sm">Xử lý keo</h3><p class="text-[10px] text-slate-400">150.000đ</p>
                 </div>
-                <div class="card-3d p-5 rounded-2xl cursor-pointer hover:bg-sky-50 active:scale-95" onclick="toggleService(this)">
-                    <i class="fa-solid fa-shoe-prints text-2xl text-emerald-500 mb-2 block"></i><h3 class="font-bold text-slate-800 text-sm">Dán Sole bảo vệ</h3>
+                <div class="service-card glass-panel p-5 rounded-2xl text-center" onclick="toggleSvc(this, 'Dán Sole', 300000)">
+                    <i class="fa-solid fa-shoe-prints text-2xl text-emerald-500 mb-2 block"></i><h3 class="font-bold text-sm">Dán Sole</h3><p class="text-[10px] text-slate-400">300.000đ</p>
                 </div>
-                <div class="card-3d p-5 rounded-2xl cursor-pointer hover:bg-sky-50 active:scale-95" onclick="toggleService(this)">
-                    <i class="fa-solid fa-hammer text-2xl text-rose-500 mb-2 block"></i><h3 class="font-bold text-slate-800 text-sm">Thay & Đắp đế thể thao</h3>
+                <div class="service-card glass-panel p-5 rounded-2xl text-center" onclick="toggleSvc(this, 'Đắp đế', 500000)">
+                    <i class="fa-solid fa-hammer text-2xl text-rose-500 mb-2 block"></i><h3 class="font-bold text-sm">Đắp đế</h3><p class="text-[10px] text-slate-400">200.000đ</p>
                 </div>
             </div>
-            <div class="mt-8 text-center">
-                <button onclick="alert('Cảm ơn bạn! Hệ thống đã ghi nhận đơn hàng. 3S sẽ liên hệ ngay qua số: ' + document.getElementById('cus-phone').value)" class="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-10 py-4 rounded-full font-bold text-lg shadow-xl hover:scale-105 transition border border-slate-600">GỬI YÊU CẦU ĐẶT ĐƠN</button>
+            <div class="mt-10 text-center">
+                <button onclick="submitOrder()" class="bg-slate-800 text-white px-12 py-4 rounded-full font-extrabold text-lg shadow-2xl hover:scale-105 transition">HOÀN TẤT ĐẶT ĐƠN</button>
             </div>
         </div>
     </div>
 
-    <!-- ==================== VIEW 2: ADMIN SYSTEM (FULL CHỨC NĂNG) ==================== -->
+    <!-- ==================== ADMIN SYSTEM (VIEW QUẢN LÝ) ==================== -->
     <div id="admin-view" class="hidden flex-1 flex flex-col md:flex-row gap-4 h-full w-full">
-        
-        <!-- SIDEBAR -->
         <aside class="md:w-64 glass-panel md:rounded-[32px] rounded-t-3xl flex flex-row md:flex-col p-2 md:p-6 fixed bottom-0 left-0 w-full md:relative z-40 h-auto md:h-full justify-around md:justify-start">
             <div class="hidden md:block text-center mb-8 relative">
-                <img src="logo.png" alt="3S Logo" class="logo-img mb-2 max-w-[120px]">
-                <span class="absolute top-0 right-4 bg-emerald-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full animate-pulse shadow-lg shadow-emerald-500/50">ADMIN ONLINE</span>
+                <div class="logo-container">
+                    <img src="logo.png" class="logo-img">
+                    <div class="logo-shine"></div>
+                </div>
+                <span class="absolute -top-2 right-0 bg-emerald-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full animate-pulse">ADMIN</span>
             </div>
 
-            <nav class="flex md:flex-col gap-1 md:gap-2 w-full justify-around md:justify-start">
-                <button onclick="switchAdminTab('dashboard')" id="btn-dashboard" class="menu-item active flex items-center gap-3 md:px-5 md:py-3.5 rounded-2xl md:w-full text-left font-semibold text-slate-600">
-                    <i class="fa-solid fa-chart-pie icon-cute text-xl"></i> <span>Dashboard</span>
+            <nav class="flex md:flex-col gap-2 w-full justify-around md:justify-start">
+                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-item active flex items-center gap-3 md:px-5 md:py-3.5 rounded-2xl md:w-full text-left font-bold text-slate-600">
+                    <i class="fa-solid fa-chart-line text-xl"></i> <span>Dashboard</span>
                 </button>
-                <button onclick="switchAdminTab('orders')" id="btn-orders" class="menu-item flex items-center gap-3 md:px-5 md:py-3.5 rounded-2xl md:w-full text-left font-semibold text-slate-600">
-                    <i class="fa-solid fa-box-open icon-cute text-xl"></i> <span>Quản lý Đơn</span>
+                <button onclick="switchTab('orders')" id="btn-orders" class="nav-item flex items-center gap-3 md:px-5 md:py-3.5 rounded-2xl md:w-full text-left font-bold text-slate-600">
+                    <i class="fa-solid fa-list-check text-xl"></i> <span>Đơn Hàng</span>
                 </button>
-                <button onclick="switchAdminTab('costs')" id="btn-costs" class="menu-item flex items-center gap-3 md:px-5 md:py-3.5 rounded-2xl md:w-full text-left font-semibold text-slate-600">
-                    <i class="fa-solid fa-wallet icon-cute text-xl"></i> <span>Thu Chi</span>
+                <button onclick="switchTab('finance')" id="btn-finance" class="nav-item flex items-center gap-3 md:px-5 md:py-3.5 rounded-2xl md:w-full text-left font-bold text-slate-600">
+                    <i class="fa-solid fa-wallet text-xl"></i> <span>Thu Chi</span>
                 </button>
-                <button onclick="switchAdminTab('customers')" id="btn-customers" class="menu-item flex items-center gap-3 md:px-5 md:py-3.5 rounded-2xl md:w-full text-left font-semibold text-slate-600">
-                    <i class="fa-solid fa-users icon-cute text-xl"></i> <span>Khách Hàng</span>
+                <button onclick="switchTab('customers')" id="btn-customers" class="nav-item flex items-center gap-3 md:px-5 md:py-3.5 rounded-2xl md:w-full text-left font-bold text-slate-600">
+                    <i class="fa-solid fa-users-gear text-xl"></i> <span>CRM Khách</span>
                 </button>
-                <!-- NÚT TẠO LINK CHIA SẺ MỚI -->
-                <button onclick="switchAdminTab('share')" id="btn-share" class="menu-item flex items-center gap-3 md:px-5 md:py-3.5 rounded-2xl md:w-full text-left font-bold text-sky-600 bg-sky-50 border border-sky-100">
-                    <i class="fa-solid fa-link icon-cute text-xl text-sky-500"></i> <span>Tạo Link Khách</span>
+                <button onclick="switchTab('payment')" id="btn-payment" class="nav-item flex items-center gap-3 md:px-5 md:py-3.5 rounded-2xl md:w-full text-left font-bold text-slate-600">
+                    <i class="fa-solid fa-qrcode text-xl"></i> <span>Thanh Toán</span>
                 </button>
             </nav>
-
-            <button onclick="logout()" class="hidden md:flex mt-auto text-xs font-bold text-rose-400 hover:text-rose-600 transition items-center gap-2 justify-center bg-white/50 py-2 rounded-xl border border-white">
-                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
-            </button>
+            <button onclick="location.reload()" class="hidden md:flex mt-auto p-3 text-rose-500 font-bold text-xs hover:bg-rose-50 rounded-xl transition"><i class="fa-solid fa-power-off mr-2"></i> Thoát</button>
         </aside>
 
-        <!-- MAIN ADMIN -->
-        <main class="flex-1 glass-panel rounded-[32px] p-6 md:p-8 overflow-y-auto relative pb-24 md:pb-8">
+        <main class="flex-1 glass-panel rounded-[32px] p-6 md:p-8 overflow-y-auto relative">
             <div class="absolute top-6 right-8 text-right hidden md:block">
-                <a href="tel:0382878953" class="text-sm font-bold text-sky-600 hover:text-sky-800 bg-white/50 px-3 py-1.5 rounded-xl border border-white inline-flex items-center gap-2 shadow-sm"><i class="fa-solid fa-phone text-sky-500 animate-pulse"></i> 0382.878.953</a>
+                <a href="tel:0382878953" class="text-sm font-bold text-sky-600 bg-white/60 px-3 py-1.5 rounded-xl border border-white inline-flex items-center gap-2"><i class="fa-solid fa-phone animate-pulse"></i> 0382.878.953</a>
             </div>
 
             <!-- Tab Dashboard -->
-            <section id="dashboard" class="tab-content active h-full">
-                <h2 class="text-2xl font-bold text-slate-800 mb-6">Báo Cáo Tổng Hợp Tháng</h2>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    <div class="card-3d p-4 rounded-2xl"><p class="text-[11px] font-bold text-slate-500 uppercase">Doanh Thu</p><h3 class="text-xl md:text-2xl font-bold text-sky-600">56.8M ₫</h3></div>
-                    <div class="card-3d p-4 rounded-2xl"><p class="text-[11px] font-bold text-slate-500 uppercase">Chi Phí</p><h3 class="text-xl md:text-2xl font-bold text-rose-500">14.2M ₫</h3></div>
-                    <div class="card-3d p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-white border-emerald-200"><p class="text-[11px] font-bold text-emerald-600 uppercase">Lợi Nhuận</p><h3 class="text-xl md:text-2xl font-bold text-emerald-600">42.6M ₫</h3></div>
-                    <div class="card-3d p-4 rounded-2xl"><p class="text-[11px] font-bold text-slate-500 uppercase">Số Đơn</p><h3 class="text-xl md:text-2xl font-bold text-slate-700">128 Đơn</h3></div>
+            <section id="dashboard" class="tab-content active">
+                <h2 class="text-2xl font-extrabold text-slate-800 mb-6">Phân Tích Hệ Thống</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="card-3d p-5 rounded-3xl"><p class="text-[10px] font-bold text-slate-400 uppercase">Doanh Thu Ngày</p><h3 class="text-2xl font-black text-sky-600" id="kpi-day">0 ₫</h3></div>
+                    <div class="card-3d p-5 rounded-3xl"><p class="text-[10px] font-bold text-slate-400 uppercase">Tổng Doanh Thu</p><h3 class="text-2xl font-black text-sky-700" id="kpi-total">0 ₫</h3></div>
+                    <div class="card-3d p-5 rounded-3xl"><p class="text-[10px] font-bold text-slate-400 uppercase">Tổng Chi Phí</p><h3 class="text-2xl font-black text-rose-500" id="kpi-cost">0 ₫</h3></div>
+                    <div class="card-3d p-5 rounded-3xl bg-emerald-50 border-emerald-200"><p class="text-[10px] font-bold text-emerald-600 uppercase">Lợi Nhuận Ròng</p><h3 class="text-2xl font-black text-emerald-600" id="kpi-profit">0 ₫</h3></div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 h-[300px]">
-                    <div class="card-3d p-4 rounded-2xl flex flex-col"><p class="text-sm font-bold text-slate-600 mb-2">Doanh thu vs Chi phí</p><div class="flex-1 relative"><canvas id="barChart"></canvas></div></div>
-                    <div class="card-3d p-4 rounded-2xl flex flex-col"><p class="text-sm font-bold text-slate-600 mb-2">Tăng trưởng Lợi nhuận</p><div class="flex-1 relative"><canvas id="lineChart"></canvas></div></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card-3d p-5 rounded-3xl h-80"><p class="text-sm font-bold mb-4 text-slate-600">Doanh Thu vs Chi Phí</p><canvas id="chartBar"></canvas></div>
+                    <div class="card-3d p-5 rounded-3xl h-80"><p class="text-sm font-bold mb-4 text-slate-600">Tăng Trưởng Lợi Nhuận</p><canvas id="chartLine"></canvas></div>
                 </div>
             </section>
 
-            <!-- Các tab khác lược bớt code trùng lặp để gọn, vẫn giữ cấu trúc cũ của Admin -->
-            <section id="orders" class="tab-content"><h2 class="text-2xl font-bold text-slate-800 mb-6">Đơn hàng (Demo)</h2></section>
-            <section id="costs" class="tab-content"><h2 class="text-2xl font-bold text-slate-800 mb-6">Chi phí (Demo)</h2></section>
-            
-            <!-- Tab Khách Hàng (Tích hợp Click-to-call) -->
-            <section id="customers" class="tab-content">
-                <h2 class="text-2xl font-bold text-slate-800 mb-6">CRM Khách Hàng</h2>
-                <div class="card-3d rounded-2xl overflow-hidden p-1">
+            <!-- Tab Đơn Hàng -->
+            <section id="orders" class="tab-content">
+                <h2 class="text-2xl font-extrabold text-slate-800 mb-6">Quản Lý Đơn Hàng</h2>
+                <div class="card-3d rounded-3xl overflow-hidden">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-white/50 text-slate-500 text-xs"><tr><th class="py-3 px-4">Khách Hàng</th><th class="py-3 px-4">Liên hệ gọi ngay</th><th class="py-3 px-4">Hạng</th></tr></thead>
-                        <tbody>
-                            <tr class="border-b border-white hover:bg-white/30">
-                                <td class="py-3 px-4 font-bold text-slate-800">Anh Hoàng</td>
-                                <!-- Click-to-call cho Admin -->
-                                <td class="py-3 px-4"><a href="tel:0909123456" class="font-mono font-bold text-sky-600 bg-sky-50 px-2 py-1 rounded-lg border border-sky-100 hover:bg-sky-500 hover:text-white transition"><i class="fa-solid fa-phone mr-1"></i> 0909.123.456</a></td>
-                                <td class="py-3 px-4"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs font-bold"><i class="fa-solid fa-gem mr-1"></i> Kim Cương</span></td>
-                            </tr>
-                        </tbody>
+                        <thead class="bg-slate-100 text-slate-500 uppercase text-xs">
+                            <tr><th class="py-4 px-6">Khách Hàng</th><th class="py-4 px-6">Dịch Vụ</th><th class="py-4 px-6">Ngày Đặt</th><th class="py-4 px-6">Trạng Thái</th></tr>
+                        </thead>
+                        <tbody id="order-list" class="divide-y divide-white"></tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- TAB TẠO LINK (MỚI) -->
-            <section id="share" class="tab-content h-full flex flex-col justify-center items-center">
-                <div class="card-3d p-8 rounded-[32px] w-full max-w-lg text-center shadow-2xl border-2 border-sky-200">
-                    <div class="w-20 h-20 bg-sky-100 text-sky-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-inner">
-                        <i class="fa-solid fa-link"></i>
+            <!-- Tab Thu Chi -->
+            <section id="finance" class="tab-content">
+                <h2 class="text-2xl font-extrabold text-slate-800 mb-6">Quản Lý Thu Chi</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="card-3d p-6 rounded-3xl h-fit">
+                        <h3 class="font-bold mb-4">Nhập Chi Phí</h3>
+                        <div class="space-y-3">
+                            <input type="text" id="cost-desc" placeholder="Mô tả chi phí..." class="w-full p-3 rounded-xl bg-white/50 ring-1 ring-sky-100 outline-none">
+                            <input type="number" id="cost-val" placeholder="Số tiền (₫)" class="w-full p-3 rounded-xl bg-white/50 ring-1 ring-sky-100 outline-none">
+                            <select id="cost-type" class="w-full p-3 rounded-xl bg-white/50 ring-1 ring-sky-100 outline-none">
+                                <option value="vattu">Vật tư tiêu hao</option>
+                                <option value="codinh">Vật tư cố định</option>
+                                <option value="phatsinh">Chi phí phát sinh</option>
+                            </select>
+                            <button onclick="addCost()" class="w-full bg-rose-500 text-white font-bold py-3 rounded-xl shadow-lg hover:bg-rose-600 transition">Ghi Nhận</button>
+                        </div>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-800 mb-2">Tạo Link Đặt Đơn Cho Khách</h2>
-                    <p class="text-sm text-slate-500 mb-8">Link này sẽ dẫn thẳng đến trang đặt dịch vụ và tự động **hết hạn sau 24 giờ** để bảo mật hệ thống.</p>
-                    
-                    <button onclick="generateTokenLink()" class="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:scale-105 transition mb-6 text-lg">
-                        <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> TẠO LINK MỚI NGAY
-                    </button>
-
-                    <div id="link-result" class="hidden relative">
-                        <input type="text" id="generated-url" readonly class="w-full pl-4 pr-12 py-3 rounded-xl border border-sky-200 bg-sky-50 text-sky-800 font-mono text-sm outline-none">
-                        <button onclick="copyLink()" class="absolute right-2 top-2 bg-sky-500 text-white p-2 rounded-lg hover:bg-sky-600 transition">
-                            <i class="fa-solid fa-copy"></i>
-                        </button>
+                    <div class="card-3d p-6 rounded-3xl md:col-span-2">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold">Lịch Sử Chi Tiêu</h3>
+                            <span class="text-rose-500 font-black text-lg" id="total-cost-display">0 ₫</span>
+                        </div>
+                        <ul id="cost-list" class="space-y-3"></ul>
                     </div>
                 </div>
             </section>
 
+            <!-- Tab CRM -->
+            <section id="customers" class="tab-content">
+                <h2 class="text-2xl font-extrabold text-slate-800 mb-6">CRM Quản Lý Khách Hàng</h2>
+                <div class="card-3d rounded-3xl overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100 text-slate-500 uppercase text-xs">
+                            <tr><th class="py-4 px-6">Khách</th><th class="py-4 px-6">SĐT</th><th class="py-4 px-6">Số Lần SD</th><th class="py-4 px-6">Đánh Giá</th><th class="py-4 px-6">Tổng Tiền</th></tr>
+                        </thead>
+                        <tbody id="customer-list" class="divide-y divide-white"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Tab Thanh Toán -->
+            <section id="payment" class="tab-content flex flex-col items-center justify-center h-full">
+                <div class="card-3d p-8 rounded-[40px] w-full max-w-md text-center shadow-2xl">
+                    <h3 class="text-xl font-black mb-6">Tính Tiền Thanh Toán</h3>
+                    <div id="pay-services" class="grid grid-cols-2 gap-2 mb-6 text-left">
+                        <!-- Dịch vụ thanh toán sẽ hiện ở đây -->
+                    </div>
+                    <div class="text-center mb-6">
+                        <p class="text-sm text-slate-500">Tổng tiền cần thanh toán:</p>
+                        <h2 class="text-4xl font-black text-sky-600" id="pay-total">0 ₫</h2>
+                    </div>
+                    <div id="qr-area" class="hidden">
+                        <img src="" id="qr-img" class="w-full rounded-2xl mb-4 border-4 border-white shadow-sm">
+                        <p class="text-xs text-slate-400">Quét mã để thanh toán qua VietQR</p>
+                    </div>
+                    <button onclick="generatePaymentQR()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-slate-900 transition">XUẤT MÃ QR</button>
+                </div>
+            </section>
         </main>
     </div>
 
-    <!-- TẤT CẢ LOGIC -->
     <script>
         // -----------------------------------------------------
-        // 1. LOGIC XÁC THỰC LUỒNG (ROUTING GIAO DIỆN)
+        // 1. ROUTING & AUTHENTICATION
         // -----------------------------------------------------
         document.addEventListener("DOMContentLoaded", () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get('token');
-
-            if (token) {
-                // KIỂM TRA LINK KHÁCH HÀNG (CÓ TOKEN)
-                try {
-                    // Giải mã token xem thời gian
-                    const expiryTime = parseInt(atob(token));
-                    const currentTime = new Date().getTime();
-
-                    if (currentTime < expiryTime) {
-                        // Link còn hạn -> Hiển thị Landing Page
-                        document.getElementById('landing-view').classList.remove('hidden');
-                        initSlideshow(); // Bật slideshow nền
-                    } else {
-                        // Link hết hạn
-                        document.body.innerHTML = `
-                            <div class="flex items-center justify-center h-screen w-screen bg-slate-900 flex-col">
-                                <i class="fa-solid fa-clock-rotate-left text-6xl text-rose-500 mb-4"></i>
-                                <h1 class="text-3xl font-bold text-white mb-2">Đường link đã hết hạn!</h1>
-                                <p class="text-slate-400 text-center px-4">Vui lòng liên hệ 3S Shoe Care (0382.878.953)<br>để nhận đường link đặt đơn mới.</p>
-                            </div>
-                        `;
-                    }
-                } catch (e) {
-                    alert("Đường link không hợp lệ!");
-                }
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('page') === 'order') {
+                document.getElementById('landing-view').classList.remove('hidden');
+                initSlideshow();
             } else {
-                // KHÔNG CÓ TOKEN -> LINK GỐC QUẢN LÝ -> HIỂN THỊ ĐĂNG NHẬP
                 document.getElementById('login-view').classList.remove('hidden');
             }
         });
 
-        // -----------------------------------------------------
-        // 2. LOGIC BẢO MẬT ADMIN (ĐĂNG NHẬP)
-        // -----------------------------------------------------
-        function handleLogin() {
-            const u = document.getElementById('username').value;
-            const p = document.getElementById('password').value;
-            
-            // TẠM THỜI: Setup tài khoản cứng ở đây. Sau này nối Database Supabase sẽ gọi API
-            if(u === 'admin' && p === '123456') {
+        function doLogin() {
+            if(document.getElementById('user').value === 'admin' && document.getElementById('pass').value === '123456') {
                 document.getElementById('login-view').classList.add('hidden');
                 document.getElementById('admin-view').classList.remove('hidden');
-                setTimeout(initCharts, 100);
-            } else {
-                alert('Tài khoản hoặc mật khẩu không chính xác!');
-            }
-        }
-
-        function logout() {
-            location.href = window.location.pathname; // Tải lại trang xóa token
+                updateDashboard();
+            } else { alert('Sai thông tin đăng nhập!'); }
         }
 
         // -----------------------------------------------------
-        // 3. LOGIC TẠO LINK CHIA SẺ 24H 
+        // 2. LANDING PAGE LOGIC (LOCALSTORAGE)
         // -----------------------------------------------------
-        function generateTokenLink() {
-            // Tạo timestamp hiện tại + 24 giờ (86400000 ms)
-            const expiryTime = new Date().getTime() + 86400000;
-            // Mã hóa thời gian thành chuỗi (Base64) để giấu đi
-            const token = btoa(expiryTime.toString());
+        let selectedServices = [];
+        function toStep2() {
+            const n = document.getElementById('cus-name').value;
+            const p = document.getElementById('cus-phone').value;
+            if(!n || !p) return alert("Điền tên và SĐT anh nhé!");
+            document.getElementById('show-name').innerText = n;
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.remove('hidden');
+        }
+
+        function toggleSvc(el, name, price) {
+            el.classList.toggle('selected');
+            const idx = selectedServices.findIndex(s => s.name === name);
+            if(idx > -1) selectedServices.splice(idx, 1);
+            else selectedServices.push({name, price});
+        }
+
+        function submitOrder() {
+            if(selectedServices.length === 0) return alert("Anh chọn ít nhất 1 dịch vụ nhé!");
+            const order = {
+                id: '3S-' + Date.now(),
+                customer: document.getElementById('cus-name').value,
+                phone: document.getElementById('cus-phone').value,
+                services: selectedServices.map(s => s.name).join(', '),
+                total: selectedServices.reduce((a, b) => a + b.price, 0),
+                date: new Date().toLocaleDateString('vi-VN'),
+                status: 'Mới đặt'
+            };
+            // LƯU VÀO LOCALSTORAGE (Giả lập Database)
+            let orders = JSON.parse(localStorage.getItem('3s_orders') || '[]');
+            orders.push(order);
+            localStorage.setItem('3s_orders', JSON.stringify(orders));
             
-            // Ghép URL hiện tại với token
-            const baseUrl = window.location.origin + window.location.pathname;
-            const shareUrl = `${baseUrl}?token=${token}`;
-            
-            const resultDiv = document.getElementById('link-result');
-            const inputUrl = document.getElementById('generated-url');
-            
-            inputUrl.value = shareUrl;
-            resultDiv.classList.remove('hidden');
+            alert('Đặt đơn thành công! 3S sẽ gọi lại cho bạn ngay.');
+            location.reload();
         }
 
-        function copyLink() {
-            const inputUrl = document.getElementById('generated-url');
-            inputUrl.select();
-            document.execCommand('copy');
-            alert('Đã copy link! Gửi ngay cho khách hàng nhé.');
-        }
-
-        // -----------------------------------------------------
-        // 4. SLIDESHOW ẢNH NỀN (LANDING PAGE)
-        // -----------------------------------------------------
         function initSlideshow() {
-            const bgSlider = document.getElementById('bg-slider');
-            // CÁCH THÊM ẢNH: Đổi tên các link ảnh dưới đây thành ảnh thật trên Github của anh
-            // Ví dụ: ['slide1.jpg', 'slide2.jpg', 'slide3.jpg']
-            const images = [
-                'Pic1.png',
-                'Pic2.png',
-                'Pic3.png','Pic4.png','Pic5.png','Pic6.png'
-            ];
-            let currentIndex = 0;
-
-            // Set ảnh đầu tiên
-            bgSlider.style.backgroundImage = `url('${images[0]}')`;
-
-            // Tự động chuyển đổi sau mỗi 4 giây
+            const slider = document.getElementById('slider');
+            const images = ['Pic1.png', 'Pic2.png', 'Pic3.png', 'Pic4.png', 'Pic5.png', 'Pic6.png'];
+            images.forEach((img, i) => {
+                const div = document.createElement('div');
+                div.className = `bg-slide ${i === 0 ? 'active' : ''}`;
+                div.style.backgroundImage = `url('${img}')`;
+                slider.appendChild(div);
+            });
+            let current = 0;
             setInterval(() => {
-                currentIndex = (currentIndex + 1) % images.length;
-                bgSlider.style.backgroundImage = `url('${images[currentIndex]}')`;
+                document.querySelectorAll('.bg-slide')[current].classList.remove('active');
+                current = (current + 1) % images.length;
+                document.querySelectorAll('.bg-slide')[current].classList.add('active');
             }, 4000);
         }
 
         // -----------------------------------------------------
-        // CÁC HÀM CŨ (Menu Admin & Biểu đồ)
+        // 3. ADMIN LOGIC (DATABASE LOCALSTORAGE)
         // -----------------------------------------------------
-        const adminTabs = ['dashboard', 'orders', 'costs', 'customers', 'share'];
-        function switchAdminTab(activeTabId) {
-            adminTabs.forEach(tab => {
-                document.getElementById(tab).classList.remove('active');
-                document.getElementById('btn-' + tab).classList.remove('active');
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.getElementById('btn-' + id).classList.add('active');
+            if(id === 'dashboard') updateDashboard();
+            if(id === 'orders') updateOrders();
+            if(id === 'finance') updateFinance();
+            if(id === 'customers') updateCRM();
+            if(id === 'payment') initPayment();
+        }
+
+        function updateDashboard() {
+            const orders = JSON.parse(localStorage.getItem('3s_orders') || '[]');
+            const costs = JSON.parse(localStorage.getItem('3s_costs') || '[]');
+            
+            const totalRev = orders.reduce((a, b) => a + b.total, 0);
+            const totalCost = costs.reduce((a, b) => a + b.val, 0);
+            
+            document.getElementById('kpi-total').innerText = totalRev.toLocaleString() + ' ₫';
+            document.getElementById('kpi-cost').innerText = totalCost.toLocaleString() + ' ₫';
+            document.getElementById('kpi-profit').innerText = (totalRev - totalCost).toLocaleString() + ' ₫';
+            document.getElementById('kpi-day').innerText = (totalRev / 30 * 1).toLocaleString() + ' ₫'; // Demo
+
+            initCharts(totalRev, totalCost);
+        }
+
+        function updateOrders() {
+            const orders = JSON.parse(localStorage.getItem('3s_orders') || '[]');
+            const list = document.getElementById('order-list');
+            list.innerHTML = orders.map(o => `
+                <tr class="hover:bg-white/50 transition">
+                    <td class="py-4 px-6 font-bold">${o.customer}<br><span class="text-xs text-slate-400">${o.phone}</span></td>
+                    <td class="py-4 px-6 text-slate-600">${o.services}</td>
+                    <td class="py-4 px-6">${o.date}</td>
+                    <td class="py-4 px-6"><span class="bg-sky-100 text-sky-600 px-2 py-1 rounded-lg text-xs font-bold">${o.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function addCost() {
+            const desc = document.getElementById('cost-desc').value;
+            const val = parseInt(document.getElementById('cost-val').value);
+            const type = document.getElementById('cost-type').value;
+            if(!desc || !val) return alert("Điền đủ chi phí!");
+            
+            let costs = JSON.parse(localStorage.getItem('3s_costs') || '[]');
+            costs.push({desc, val, type, date: new Date().toLocaleDateString()});
+            localStorage.setItem('3s_costs', JSON.stringify(costs));
+            updateFinance();
+        }
+
+        function updateFinance() {
+            const costs = JSON.parse(localStorage.getItem('3s_costs') || '[]');
+            const list = document.getElementById('cost-list');
+            let total = 0;
+            list.innerHTML = costs.map(c => {
+                total += c.val;
+                return `<li class="flex justify-between p-3 bg-white/60 rounded-xl border border-white shadow-sm">
+                    <span class="text-sm font-bold text-slate-700">${c.desc} <small class="text-slate-400 ml-2">${c.type}</small></span>
+                    <span class="text-rose-500 font-bold">-${c.val.toLocaleString()} ₫</span>
+                </li>`;
+            }).join('');
+            document.getElementById('total-cost-display').innerText = total.toLocaleString() + ' ₫';
+        }
+
+        function updateCRM() {
+            const orders = JSON.parse(localStorage.getItem('3s_orders') || '[]');
+            const customers = {};
+            orders.forEach(o => {
+                if(!customers[o.phone]) customers[o.phone] = {name: o.customer, count: 0, total: 0};
+                customers[o.phone].count++;
+                customers[o.//total += o.total;
             });
-            document.getElementById(activeTabId).classList.add('active');
-            document.getElementById('btn-' + activeTabId).classList.add('active');
+            // Demo CRM list
+            const list = document.getElementById('customer-list');
+            list.innerHTML = Object.keys(customers).map(phone => `
+                <tr class="border-b border-white hover:bg-white/50 transition">
+                    <td class="py-4 px-6 font-bold">${customers[phone].name}</td>
+                    <td class="py-4 px-6 font-mono">${phone}</td>
+                    <td class="py-4 px-6">${customers[phone].count} lần</td>
+                    <td class="py-4 px-6 text-yellow-500"><i class="fa-solid fa-star"></i> 5/5</td>
+                    <td class="py-4 px-6 font-bold text-sky-600">${customers[phone].total.toLocaleString()} ₫</td>
+                </tr>
+            `).join('');
         }
 
-        function showServices() {
-            const p = document.getElementById('cus-phone').value;
-            const n = document.getElementById('cus-name').value;
-            if(!p || !n) return alert("Vui lòng điền đủ Tên và SĐT!");
-            document.getElementById('display-cus-name').innerText = n;
-            document.getElementById('booking-step-1').classList.add('hidden');
-            document.getElementById('booking-step-2').classList.remove('hidden');
+        function initPayment() {
+            const svcs = [
+                {n: 'Vệ sinh 3S', p: 200000}, {n: 'Tẩy ố', p: 100000}, 
+                {n: 'Xử lý keo', p: 150000}, {n: 'Dán Sole', p: 300000}, {n: 'Đắp đế', p: 500000}
+            ];
+            const area = document.getElementById('pay-services');
+            area.innerHTML = svcs.map(s => `
+                <div class="flex justify-between items-center p-3 bg-white/80 rounded-xl border border-white cursor-pointer hover:bg-sky-50 transition" onclick="this.classList.toggle('bg-sky-100'); updatePayTotal()">
+                    <span class="text-xs font-bold">${s.n}</span>
+                    <span class="text-xs font-bold text-sky-600">${s.p.toLocaleString()}₫</span>
+                    <input type="checkbox" class="ml-2" value="${s.p}">
+                </div>
+            `).join('');
         }
 
-        function toggleService(el) {
-            el.classList.toggle('ring-2'); el.classList.toggle('ring-sky-500'); el.classList.toggle('bg-sky-50');
+        function updatePayTotal() {
+            let total = 0;
+            document.querySelectorAll('#pay-services input:checked').forEach(i => total += parseInt(i.value));
+            document.getElementById('pay-total').innerText = total.toLocaleString() + ' ₫';
         }
 
-        function initCharts() {
-            // Rút gọn: Khởi tạo chart.js (Giống code bản trước)
-            new Chart(document.getElementById('barChart'), {type:'bar', data:{labels:['T1','T2','T3','T4'], datasets:[{label:'Thu',data:[12,19,15,10],backgroundColor:'#0ea5e9'},{label:'Chi',data:[5,4,3,2],backgroundColor:'#f43f5e'}]}});
-            new Chart(document.getElementById('lineChart'), {type:'line', data:{labels:['Tháng 1','Tháng 2','Tháng 3','Tháng 4'], datasets:[{label:'Lợi nhuận',data:[25,30,28,42],borderColor:'#10b981'}]}});
+        function generatePaymentQR() {
+            const total = document.getElementById('pay-total').innerText.replace(/\s/g, '').replace('₫', '');
+            if(total === '0') return alert("Chọn dịch vụ để tính tiền!");
+            const qrUrl = `https://api.vietqr.io/image/970436-123456789-9wP3jB2.jpg?amount=${total}&addInfo=THANH_TOAN_3S`;
+            document.getElementById('qr-img').src = qrUrl;
+            document.getElementById('qr-area').classList.remove('hidden');
+        }
+
+        function initCharts(rev, cost) {
+            new Chart(document.getElementById('chartBar'), {
+                type: 'bar',
+                data: { labels: ['T1', 'T2', 'T3', 'T4'], datasets: [{label: 'Doanh Thu', data: [12, 19, 15, 20], backgroundColor: '#0ea5e9'}, {label: 'Chi Phí', data: [5, 8, 4, 6], backgroundColor: '#f43f5e'}] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+            new Chart(document.getElementById('chartLine'), {
+                type: 'line',
+                data: { labels: ['Th1', 'Th2', 'Th3', 'Th4'], datasets: [{label: 'Lợi Nhuận', data: [20, 45, 30, 60], borderColor: '#10b981', tension: 0.4 }] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
         }
     </script>
 </body>
