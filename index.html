@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3S Shoe Care - Hệ Thống Quản Lý</title>
+    
+    <!-- Tích hợp Tailwind CSS qua CDN giống Scantag -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tích hợp Chart.js cho Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Tích hợp FontAwesome cho Menu Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Không gian tương lai nhưng vẫn mềm mại -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-light: #38bdf8;
+        }
+
+        /* Nền xanh nhạt gradient */
+        body { 
+            font-family: 'Space Grotesk', sans-serif; 
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            color: #1e293b;
+            overflow: hidden; /* Cố định màn hình giống app */
+        }
+
+        /* Hiệu ứng Glassmorphism thay thế cho Darkmode của scantag */
+        .glass-panel { 
+            background: rgba(255, 255, 255, 0.45); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.7); 
+            box-shadow: 0 10px 30px rgba(2, 132, 199, 0.08);
+        }
+
+        /* Animation Logo 3S chớp sáng liên tục */
+        .logo-3s {
+            animation: floatGlow 3s ease-in-out infinite;
+            color: var(--primary);
+        }
+        @keyframes floatGlow {
+            0%, 100% { transform: translateY(0) scale(1); text-shadow: 0 0 10px rgba(2, 132, 199, 0.3); }
+            50% { transform: translateY(-4px) scale(1.05); text-shadow: 0 0 20px rgba(2, 132, 199, 0.8), 0 0 5px rgba(255,255,255,0.9); }
+        }
+
+        /* Icon chuyển động nảy dễ thương */
+        .menu-item { transition: all 0.3s; }
+        .menu-item.active { background: rgba(255, 255, 255, 0.8); box-shadow: 0 4px 15px rgba(0,0,0,0.05); color: var(--primary); font-weight: bold;}
+        .menu-item:hover { background: rgba(255, 255, 255, 0.6); }
+        
+        .icon-cute { 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .menu-item:hover .icon-cute, .menu-item.active .icon-cute { 
+            transform: scale(1.4) rotate(-15deg); 
+            color: var(--primary-light); 
+        }
+
+        /* Thẻ danh mục hiệu ứng tương lai */
+        .futuristic-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.7), rgba(255,255,255,0.2));
+            border: 1px solid rgba(255,255,255,0.9);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .futuristic-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+            transition: left 0.6s ease;
+        }
+        .futuristic-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(2, 132, 199, 0.15);
+            border-color: var(--primary-light);
+        }
+        .futuristic-card:hover::before { left: 100%; }
+
+        /* Animation cho Tab nội dung */
+        .tab-content { display: none; animation: fadeIn 0.4s ease-out forwards; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(2, 132, 199, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(2, 132, 199, 0.5); }
+    </style>
+</head>
+<body class="p-4 h-screen w-screen flex gap-4">
+
+    <!-- SIDEBAR BÊN TRÁI -->
+    <aside class="w-64 glass-panel rounded-[24px] p-6 flex flex-col">
+        <!-- Logo 3S góc trái -->
+        <div class="text-center mb-10">
+            <h1 class="logo-3s text-5xl font-bold tracking-wider mb-1">3S</h1>
+            <p class="text-xs font-bold text-slate-500 tracking-[0.2em] uppercase">Shoe Care</p>
+        </div>
+
+        <!-- Menu Navigation -->
+        <nav class="flex flex-col gap-2 flex-1">
+            <button onclick="switchTab('dashboard')" id="btn-dashboard" class="menu-item active flex items-center gap-4 px-4 py-3 rounded-xl w-full text-left text-sm font-semibold text-slate-600">
+                <i class="fa-solid fa-chart-pie icon-cute text-lg w-6"></i> Báo Cáo
+            </button>
+            <button onclick="switchTab('orders')" id="btn-orders" class="menu-item flex items-center gap-4 px-4 py-3 rounded-xl w-full text-left text-sm font-semibold text-slate-600">
+                <i class="fa-solid fa-box-open icon-cute text-lg w-6"></i> Quản Lý Đơn
+            </button>
+            <button onclick="switchTab('services')" id="btn-services" class="menu-item flex items-center gap-4 px-4 py-3 rounded-xl w-full text-left text-sm font-semibold text-slate-600">
+                <i class="fa-solid fa-wand-magic-sparkles icon-cute text-lg w-6"></i> Dịch Vụ 3S
+            </button>
+            <button onclick="switchTab('payment')" id="btn-payment" class="menu-item flex items-center gap-4 px-4 py-3 rounded-xl w-full text-left text-sm font-semibold text-slate-600">
+                <i class="fa-solid fa-qrcode icon-cute text-lg w-6"></i> Thanh Toán QR
+            </button>
+        </nav>
+
+        <!-- System Status -->
+        <div class="mt-auto pt-4 border-t border-white/50 flex justify-center items-center gap-2">
+            <span class="h-2 w-2 bg-emerald-500 rounded-full animate-ping"></span>
+            <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">System Online</span>
+        </div>
+    </aside>
+
+    <!-- NỘI DUNG CHÍNH (MAIN CONTENT) -->
+    <main class="flex-1 glass-panel rounded-[24px] p-8 overflow-y-auto relative">
+        
+        <!-- Tab 1: Dashboard -->
+        <section id="dashboard" class="tab-content active h-full flex flex-col">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-bold text-slate-800">Phân tích Metric & Doanh Thu</h2>
+                <span class="bg-white/60 px-4 py-1.5 rounded-full text-sm font-semibold text-sky-700 border border-white">Tháng này</span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6 mb-8">
+                <!-- Doanh thu ngày -->
+                <div class="bg-white/50 p-6 rounded-2xl shadow-sm border border-white">
+                    <p class="text-sm font-bold text-slate-500 mb-2 uppercase">Doanh thu ngày</p>
+                    <h3 class="text-3xl font-bold text-emerald-600">2,450,000 ₫</h3>
+                    <p class="text-xs text-emerald-500 mt-2 flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> +15% so với hôm qua</p>
+                </div>
+                <!-- Doanh thu tháng -->
+                <div class="bg-white/50 p-6 rounded-2xl shadow-sm border border-white">
+                    <p class="text-sm font-bold text-slate-500 mb-2 uppercase">Doanh thu tháng</p>
+                    <h3 class="text-3xl font-bold text-sky-600">56,800,000 ₫</h3>
+                    <p class="text-xs text-sky-500 mt-2 flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> +8% so với tháng trước</p>
+                </div>
+                <!-- Đơn đang xử lý -->
+                <div class="bg-white/50 p-6 rounded-2xl shadow-sm border border-white">
+                    <p class="text-sm font-bold text-slate-500 mb-2 uppercase">Đơn đang xử lý</p>
+                    <h3 class="text-3xl font-bold text-orange-500">14 Đơn</h3>
+                    <p class="text-xs text-slate-500 mt-2 flex items-center gap-1"><i class="fa-solid fa-shoe-prints"></i> 6 đơn hẹn trả hôm nay</p>
+                </div>
+            </div>
+
+            <!-- Chart Container -->
+            <div class="bg-white/50 p-6 rounded-2xl border border-white shadow-sm flex-1 relative">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Tab 2: Quản lý đơn hàng (Mẫu giả lập) -->
+        <section id="orders" class="tab-content">
+            <h2 class="text-2xl font-bold text-slate-800 mb-8">Quản Lý Đơn Đặt Hàng</h2>
+            <div class="bg-white/50 rounded-2xl border border-white overflow-hidden shadow-sm">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-white/60 text-slate-600">
+                        <tr>
+                            <th class="py-4 px-6 font-bold">Mã Đơn</th>
+                            <th class="py-4 px-6 font-bold">Khách Hàng</th>
+                            <th class="py-4 px-6 font-bold">Dịch Vụ</th>
+                            <th class="py-4 px-6 font-bold">Trạng Thái</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/40">
+                        <tr class="hover:bg-white/30 transition">
+                            <td class="py-4 px-6 font-bold text-sky-700">#3S-1024</td>
+                            <td class="py-4 px-6">Anh Hoàng (Nike AF1)</td>
+                            <td class="py-4 px-6 text-slate-600">3S vệ sinh chuyên sâu</td>
+                            <td class="py-4 px-6"><span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-bold">Đang vệ sinh</span></td>
+                        </tr>
+                        <tr class="hover:bg-white/30 transition">
+                            <td class="py-4 px-6 font-bold text-sky-700">#3S-1025</td>
+                            <td class="py-4 px-6">Chị Linh (Dior B23)</td>
+                            <td class="py-4 px-6 text-slate-600">Tẩy ố + Phục hồi đế</td>
+                            <td class="py-4 px-6"><span class="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-xs font-bold">Đã xong</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Tab 3: Dịch vụ 3S -->
+        <section id="services" class="tab-content">
+            <h2 class="text-2xl font-bold text-slate-800 mb-8">Danh mục dịch vụ 3S</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Thẻ Dịch vụ 1 -->
+                <div class="futuristic-card p-6 rounded-2xl">
+                    <i class="fa-solid fa-soap text-4xl text-sky-500 mb-4 block drop-shadow-md"></i>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">3S Vệ sinh chuyên sâu</h3>
+                    <p class="text-sm text-slate-600">Làm sạch từ trong ra ngoài, diệt khuẩn 99% bằng dung dịch Crep/Jason Markk.</p>
+                </div>
+                <!-- Thẻ Dịch vụ 2 -->
+                <div class="futuristic-card p-6 rounded-2xl">
+                    <i class="fa-solid fa-shoe-prints text-4xl text-sky-500 mb-4 block drop-shadow-md"></i>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">3S Phục hồi đế</h3>
+                    <p class="text-sm text-slate-600">Repaint đế, làm trắng Icy Sole, dán dán sole bảo vệ đế giày toàn diện.</p>
+                </div>
+                <!-- Thẻ Dịch vụ 3 -->
+                <div class="futuristic-card p-6 rounded-2xl bg-gradient-to-br from-white/60 to-sky-100/50">
+                    <i class="fa-solid fa-crown text-4xl text-yellow-500 mb-4 block drop-shadow-md"></i>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Combo 3S Phục hồi chuyên sâu</h3>
+                    <p class="text-sm text-slate-600">Chăm sóc toàn diện Full HD, đưa đôi giày của bạn trở về tình trạng như mới xuất xưởng.</p>
+                </div>
+                <!-- Thẻ Dịch vụ 4 -->
+                <div class="futuristic-card p-6 rounded-2xl">
+                    <i class="fa-solid fa-droplet-slash text-4xl text-sky-500 mb-4 block drop-shadow-md"></i>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Tẩy ố</h3>
+                    <p class="text-sm text-slate-600">Đánh bay vết ố vàng cứng đầu trên vải thân giày, lưới mesh và cao su.</p>
+                </div>
+                <!-- Thẻ Dịch vụ 5 -->
+                <div class="futuristic-card p-6 rounded-2xl">
+                    <i class="fa-solid fa-layer-group text-4xl text-sky-500 mb-4 block drop-shadow-md"></i>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Phục hồi tình trạng keo</h3>
+                    <p class="text-sm text-slate-600">Vệ sinh keo cũ, dán lại bằng keo nhiệt chuyên dụng và ép máy công nghiệp độ bền cao.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 4: Thanh toán QR -->
+        <section id="payment" class="tab-content">
+            <h2 class="text-2xl font-bold text-slate-800 mb-8">Thanh Toán QR Ngân Hàng</h2>
+            <div class="flex justify-center">
+                <div class="futuristic-card p-8 rounded-[32px] w-full max-w-sm text-center">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm inline-block mb-6">
+                        <!-- URL Demo QR, anh thay bằng URL API VietQR của ngân hàng thật của mình sau nhé -->
+                        <img src="https://api.vietqr.io/image/970436-123456789-9wP3jB2.jpg?accountName=3S%20SHOE%20CARE&amount=0&addInfo=THANH%20TOAN%203S" 
+                             alt="VietQR" class="w-full rounded-xl">
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">Quét mã để thanh toán</h3>
+                    <p class="text-sm text-slate-500">Hỗ trợ tất cả ứng dụng Smart Banking, Momo, VNPay và ZaloPay.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- SCRIPT GỘP CHUNG VÀO 1 FILE -->
+    <script>
+        // 1. Logic chuyển Menu Tabs
+        const tabs = ['dashboard', 'orders', 'services', 'payment'];
+        
+        function switchTab(activeTabId) {
+            // Ẩn tất cả nội dung & bỏ trạng thái active của menu
+            tabs.forEach(tab => {
+                document.getElementById(tab).classList.remove('active');
+                document.getElementById('btn-' + tab).classList.remove('active');
+            });
+
+            // Hiện nội dung tab được chọn
+            document.getElementById(activeTabId).classList.add('active');
+            document.getElementById('btn-' + activeTabId).classList.add('active');
+        }
+
+        // 2. Logic khởi tạo Chart.js (Biểu đồ tương lai)
+        document.addEventListener("DOMContentLoaded", function() {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            
+            // Tạo dải màu gradient cho biểu đồ
+            let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(2, 132, 199, 0.4)'); // Xanh sky trong suốt
+            gradient.addColorStop(1, 'rgba(2, 132, 199, 0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                    datasets: [{
+                        label: 'Doanh thu (Tr VNĐ)',
+                        data: [1.2, 2.1, 1.8, 3.2, 2.5, 4.8, 5.5],
+                        borderColor: '#0284c7', // Màu xanh chủ đạo
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#0284c7',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        fill: true,
+                        tension: 0.4 // Đường cong mềm mại
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { color: 'rgba(255,255,255,0.6)', borderDash: [5, 5] },
+                            ticks: { color: '#64748b' }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { color: '#64748b', font: { weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
