@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3S Shoe Care - System</title>
+    <title>3S Shoe Care - Enterprise System</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -25,7 +25,6 @@
             overflow: hidden; height: 100vh; width: 100vw;
         }
 
-        /* GLASSMORPHISM 2.0 */
         .glass-panel { 
             background: var(--glass); 
             backdrop-filter: blur(20px); 
@@ -34,7 +33,6 @@
             box-shadow: 0 10px 40px rgba(2, 132, 199, 0.1);
         }
 
-        /* LOGO HIGH-END ANIMATION */
         .logo-container { position: relative; width: 160px; margin: 0 auto; }
         .logo-img {
             width: 100%; display: block;
@@ -53,55 +51,32 @@
             animation: shine 3s infinite;
             pointer-events: none;
         }
-        @keyframes shine { 
-            0% { left: -100%; } 
-            20% { left: 150%; } 
-            100% { left: 150%; } 
-        }
+        @keyframes shine { 0% { left: -100%; } 20% { left: 150%; } 100% { left: 150%; } }
 
-        /* SLIDER CÂN ĐỐI */
-        .bg-slider-container {
-            position: absolute; inset: 0; z-index: -1;
-            overflow: hidden;
-        }
+        .bg-slider-container { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
         .bg-slide {
-            position: absolute; inset: 0;
-            width: 100%; height: 100%;
-            background-size: cover;
-            background-position: center;
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            background-size: cover; background-position: center;
             opacity: 0; transition: opacity 1s ease-in-out;
         }
         .bg-slide.active { opacity: 0.2; }
 
-        /* MENU ĐỘC ĐÁO */
-        .nav-item {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border-radius: 16px;
+        .nav-item { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-radius: 16px; }
+        @media (min-width: 768px) {
+            .nav-item.active { background: white; color: var(--primary); transform: scale(1.05) translateX(10px); box-shadow: 0 10px 20px rgba(2, 132, 199, 0.15); border-left: 4px solid var(--primary); }
+            .nav-item:hover:not(.active) { transform: translateX(5px); background: rgba(255,255,255,0.6); }
         }
-        .nav-item.active {
-            background: white;
-            color: var(--primary);
-            transform: scale(1.05) translateX(10px);
-            box-shadow: 0 10px 20px rgba(2, 132, 199, 0.15);
-            border-left: 4px solid var(--primary);
+        @media (max-width: 767px) {
+            .nav-item { flex-direction: column; font-size: 0.65rem; padding: 0.5rem; }
+            .nav-item.active { transform: translateY(-20px) scale(1.1); background: white; border-radius: 50%; width: 60px; height: 60px; justify-content: center; }
+            .nav-item.active span { display: none; }
         }
 
-        /* ANIMATION CHỌN DỊCH VỤ */
-        .service-card {
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-        .service-card.selected {
-            background: #e0f2fe;
-            border-color: var(--primary);
-            transform: scale(0.95);
-        }
+        .service-card { transition: all 0.3s ease; cursor: pointer; position: relative; }
+        .service-card.selected { background: #e0f2fe; border-color: var(--primary); transform: scale(0.95); }
         .service-card.selected::after {
-            content: '\f058'; 
-            font-family: 'Font Awesome 6 Free'; font-weight: 900;
-            position: absolute; top: 10px; right: 10px;
-            color: var(--primary); font-size: 1.2rem;
+            content: '\f058'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+            position: absolute; top: 10px; right: 10px; color: var(--primary); font-size: 1.2rem;
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
@@ -110,54 +85,40 @@
         .tab-content.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* MOBILE NAV */
-        @media (max-width: 767px) {
-            .mobile-nav {
-                position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-                width: 90%; height: 70px; z-index: 100;
-            }
-            .mobile-nav .nav-item.active {
-                transform: translateY(-20px) scale(1.1);
-                background: white; border-radius: 50%; width: 60px; height: 60px;
-                justify-content: center;
-            }
-        }
+        .card-3d { transition: all 0.3s ease; background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.6)); border: 1px solid rgba(255,255,255,0.9); }
+        .card-3d:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(2, 132, 199, 0.15); border-color: var(--primary-light); }
     </style>
 </head>
 <body class="flex flex-col md:flex-row p-0 md:p-4 gap-4">
 
-    <!-- ==================== MÀN HÌNH ĐĂNG NHẬP (ADMIN) ==================== -->
+    <!-- VIEW 0: LOGIN -->
     <div id="login-view" class="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-br from-sky-100 to-blue-200 hidden">
         <div class="glass-panel p-10 rounded-[40px] w-full max-w-sm text-center shadow-2xl">
             <div class="logo-container mb-6">
                 <img src="logo.png" class="logo-img">
                 <div class="logo-shine"></div>
             </div>
-            <h2 class="text-2xl font-bold text-slate-800 mb-6">Hệ Thống 3S</h2>
+            <h2 class="text-2xl font-bold text-slate-800 mb-6">Quản Trị Hệ Thống 3S</h2>
             <input type="text" id="user" placeholder="Username" class="w-full px-4 py-3 rounded-2xl border-none bg-white/60 mb-4 outline-none ring-1 ring-sky-200 focus:ring-2 focus:ring-sky-500 transition font-semibold">
             <input type="password" id="pass" placeholder="Password" class="w-full px-4 py-3 rounded-2xl border-none bg-white/60 mb-8 outline-none ring-1 ring-sky-200 focus:ring-2 focus:ring-sky-500 transition font-semibold">
             <button onclick="doLogin()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-xl hover:bg-slate-900 transition-all active:scale-95">ĐĂNG NHẬP</button>
         </div>
     </div>
 
-    <!-- ==================== LANDING PAGE ĐẶT HÀNG (VIEW KHÁCH) ==================== -->
+    <!-- VIEW 1: LANDING PAGE -->
     <div id="landing-view" class="fixed inset-0 z-50 overflow-y-auto w-full h-full flex flex-col items-center py-10 px-4 hidden">
         <div class="bg-slider-container" id="slider"></div>
         <div class="absolute inset-0 bg-white/40 backdrop-blur-md z-[-1]"></div>
-
         <div class="absolute top-4 right-4 text-right bg-white/50 p-3 rounded-2xl backdrop-blur-sm shadow-sm">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest"><i class="fa-solid fa-location-dot text-sky-500 mr-1"></i> P. Long Nguyên, TP. HCM</p>
             <a href="tel:0382878953" class="text-sm font-extrabold text-sky-700 hover:text-sky-500 transition"><i class="fa-solid fa-phone mr-1"></i> 0382.878.953</a>
         </div>
-
         <div class="logo-container mb-6 mt-10">
             <img src="logo.png" class="logo-img">
             <div class="logo-shine"></div>
         </div>
-        
         <h1 class="text-3xl md:text-4xl font-extrabold text-center text-slate-800 mb-2 leading-tight">Đặt Lịch Chăm Sóc Giày <span class="text-sky-600">3S</span></h1>
         <p class="text-sm text-slate-500 mb-10 font-medium">Điền thông tin để 3S chăm sóc đôi giày của bạn tốt nhất</p>
-
         <div id="step-1" class="glass-panel p-8 rounded-[32px] w-full max-w-md shadow-2xl border-white">
             <div class="space-y-5">
                 <div>
@@ -171,16 +132,14 @@
                 <button onclick="toStep2()" class="w-full bg-sky-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-sky-200 hover:bg-sky-700 transition-all active:scale-95">TIẾP TỤC CHỌN DỊCH VỤ <i class="fa-solid fa-chevron-right ml-2"></i></button>
             </div>
         </div>
-
         <div id="step-2" class="hidden w-full max-w-4xl mt-6">
             <div class="glass-panel p-5 rounded-2xl mb-6 flex justify-between items-center">
                 <p class="font-bold text-slate-700">Chào <span id="show-name" class="text-sky-600">Khách hàng</span>, chọn dịch vụ nhé!</p>
                 <button onclick="location.reload()" class="text-xs font-bold text-rose-500">Sửa thông tin</button>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="service-grid">
-                <!-- Dịch vụ -->
                 <div class="service-card glass-panel p-5 rounded-2xl text-center" onclick="toggleSvc(this, 'Vệ sinh 3S', 200000)">
-                    <i class="fa-solid fa-soap text-2xl text-sky-500 mb-2 block"></i><h3 class="font-bold text-sm">Vệ sinh 3S</h3><p class="text-[10px] text-slate-400">80.000đ</p>
+                    <i class="fa-solid fa-soap text-2xl text-sky-500 mb-2 block"></i><h3 class="font-bold text-sm">Vệ sinh 3S</h3><p class="text-[10px] text-slate-400">200.000đ</p>
                 </div>
                 <div class="service-card glass-panel p-5 rounded-2xl text-center" onclick="toggleSvc(this, 'Tẩy ố', 100000)">
                     <i class="fa-solid fa-droplet-slash text-2xl text-amber-500 mb-2 block"></i><h3 class="font-bold text-sm">Tẩy ố</h3><p class="text-[10px] text-slate-400">100.000đ</p>
@@ -192,7 +151,7 @@
                     <i class="fa-solid fa-shoe-prints text-2xl text-emerald-500 mb-2 block"></i><h3 class="font-bold text-sm">Dán Sole</h3><p class="text-[10px] text-slate-400">300.000đ</p>
                 </div>
                 <div class="service-card glass-panel p-5 rounded-2xl text-center" onclick="toggleSvc(this, 'Đắp đế', 500000)">
-                    <i class="fa-solid fa-hammer text-2xl text-rose-500 mb-2 block"></i><h3 class="font-bold text-sm">Đắp đế</h3><p class="text-[10px] text-slate-400">200.000đ</p>
+                    <i class="fa-solid fa-hammer text-2xl text-rose-500 mb-2 block"></i><h3 class="font-bold text-sm">Đắp đế</h3><p class="text-[10px] text-slate-400">500.000đ</p>
                 </div>
             </div>
             <div class="mt-10 text-center">
@@ -201,7 +160,7 @@
         </div>
     </div>
 
-    <!-- ==================== ADMIN SYSTEM (VIEW QUẢN LÝ) ==================== -->
+    <!-- VIEW 2: ADMIN -->
     <div id="admin-view" class="hidden flex-1 flex flex-col md:flex-row gap-4 h-full w-full">
         <aside class="md:w-64 glass-panel md:rounded-[32px] rounded-t-3xl flex flex-row md:flex-col p-2 md:p-6 fixed bottom-0 left-0 w-full md:relative z-40 h-auto md:h-full justify-around md:justify-start">
             <div class="hidden md:block text-center mb-8 relative">
@@ -211,7 +170,6 @@
                 </div>
                 <span class="absolute -top-2 right-0 bg-emerald-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full animate-pulse">ADMIN</span>
             </div>
-
             <nav class="flex md:flex-col gap-2 w-full justify-around md:justify-start">
                 <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-item active flex items-center gap-3 md:px-5 md:py-3.5 rounded-2xl md:w-full text-left font-bold text-slate-600">
                     <i class="fa-solid fa-chart-line text-xl"></i> <span>Dashboard</span>
@@ -236,8 +194,6 @@
             <div class="absolute top-6 right-8 text-right hidden md:block">
                 <a href="tel:0382878953" class="text-sm font-bold text-sky-600 bg-white/60 px-3 py-1.5 rounded-xl border border-white inline-flex items-center gap-2"><i class="fa-solid fa-phone animate-pulse"></i> 0382.878.953</a>
             </div>
-
-            <!-- Tab Dashboard -->
             <section id="dashboard" class="tab-content active">
                 <h2 class="text-2xl font-extrabold text-slate-800 mb-6">Phân Tích Hệ Thống</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -251,8 +207,6 @@
                     <div class="card-3d p-5 rounded-3xl h-80"><p class="text-sm font-bold mb-4 text-slate-600">Tăng Trưởng Lợi Nhuận</p><canvas id="chartLine"></canvas></div>
                 </div>
             </section>
-
-            <!-- Tab Đơn Hàng -->
             <section id="orders" class="tab-content">
                 <h2 class="text-2xl font-extrabold text-slate-800 mb-6">Quản Lý Đơn Hàng</h2>
                 <div class="card-3d rounded-3xl overflow-hidden">
@@ -264,8 +218,6 @@
                     </table>
                 </div>
             </section>
-
-            <!-- Tab Thu Chi -->
             <section id="finance" class="tab-content">
                 <h2 class="text-2xl font-extrabold text-slate-800 mb-6">Quản Lý Thu Chi</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -291,8 +243,6 @@
                     </div>
                 </div>
             </section>
-
-            <!-- Tab CRM -->
             <section id="customers" class="tab-content">
                 <h2 class="text-2xl font-extrabold text-slate-800 mb-6">CRM Quản Lý Khách Hàng</h2>
                 <div class="card-3d rounded-3xl overflow-hidden">
@@ -304,14 +254,10 @@
                     </table>
                 </div>
             </section>
-
-            <!-- Tab Thanh Toán -->
             <section id="payment" class="tab-content flex flex-col items-center justify-center h-full">
                 <div class="card-3d p-8 rounded-[40px] w-full max-w-md text-center shadow-2xl">
                     <h3 class="text-xl font-black mb-6">Tính Tiền Thanh Toán</h3>
-                    <div id="pay-services" class="grid grid-cols-2 gap-2 mb-6 text-left">
-                        <!-- Dịch vụ thanh toán sẽ hiện ở đây -->
-                    </div>
+                    <div id="pay-services" class="grid grid-cols-2 gap-2 mb-6 text-left"></div>
                     <div class="text-center mb-6">
                         <p class="text-sm text-slate-500">Tổng tiền cần thanh toán:</p>
                         <h2 class="text-4xl font-black text-sky-600" id="pay-total">0 ₫</h2>
@@ -328,7 +274,7 @@
 
     <script>
         // -----------------------------------------------------
-        // 1. ROUTING & AUTHENTICATION
+        // 1. ROUTING & AUTH
         // -----------------------------------------------------
         document.addEventListener("DOMContentLoaded", () => {
             const params = new URLSearchParams(window.location.search);
@@ -349,7 +295,7 @@
         }
 
         // -----------------------------------------------------
-        // 2. LANDING PAGE LOGIC (LOCALSTORAGE)
+        // 2. LANDING PAGE LOGIC
         // -----------------------------------------------------
         let selectedServices = [];
         function toStep2() {
@@ -379,11 +325,9 @@
                 date: new Date().toLocaleDateString('vi-VN'),
                 status: 'Mới đặt'
             };
-            // LƯU VÀO LOCALSTORAGE (Giả lập Database)
             let orders = JSON.parse(localStorage.getItem('3s_orders') || '[]');
             orders.push(order);
             localStorage.setItem('3s_orders', JSON.stringify(orders));
-            
             alert('Đặt đơn thành công! 3S sẽ gọi lại cho bạn ngay.');
             location.reload();
         }
@@ -399,14 +343,16 @@
             });
             let current = 0;
             setInterval(() => {
-                document.querySelectorAll('.bg-slide')[current].classList.remove('active');
-                current = (current + 1) % images.length;
-                document.querySelectorAll('.bg-slide')[current].classList.add('active');
+                const slides = document.querySelectorAll('.bg-slide');
+                if(slides.length === 0) return;
+                slides[current].classList.remove('active');
+                current = (current + 1) % slides.length;
+                slides[current].classList.add('active');
             }, 4000);
         }
 
         // -----------------------------------------------------
-        // 3. ADMIN LOGIC (DATABASE LOCALSTORAGE)
+        // 3. ADMIN LOGIC
         // -----------------------------------------------------
         function switchTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -423,15 +369,12 @@
         function updateDashboard() {
             const orders = JSON.parse(localStorage.getItem('3s_orders') || '[]');
             const costs = JSON.parse(localStorage.getItem('3s_costs') || '[]');
-            
             const totalRev = orders.reduce((a, b) => a + b.total, 0);
             const totalCost = costs.reduce((a, b) => a + b.val, 0);
-            
             document.getElementById('kpi-total').innerText = totalRev.toLocaleString() + ' ₫';
             document.getElementById('kpi-cost').innerText = totalCost.toLocaleString() + ' ₫';
             document.getElementById('kpi-profit').innerText = (totalRev - totalCost).toLocaleString() + ' ₫';
-            document.getElementById('kpi-day').innerText = (totalRev / 30 * 1).toLocaleString() + ' ₫'; // Demo
-
+            document.getElementById('kpi-day').innerText = (totalRev / 30).toLocaleString() + ' ₫';
             initCharts(totalRev, totalCost);
         }
 
@@ -453,7 +396,6 @@
             const val = parseInt(document.getElementById('cost-val').value);
             const type = document.getElementById('cost-type').value;
             if(!desc || !val) return alert("Điền đủ chi phí!");
-            
             let costs = JSON.parse(localStorage.getItem('3s_costs') || '[]');
             costs.push({desc, val, type, date: new Date().toLocaleDateString()});
             localStorage.setItem('3s_costs', JSON.stringify(costs));
@@ -480,9 +422,8 @@
             orders.forEach(o => {
                 if(!customers[o.phone]) customers[o.phone] = {name: o.customer, count: 0, total: 0};
                 customers[o.phone].count++;
-                customers[o.//total += o.total;
+                customers[o.phone].total += o.total;
             });
-            // Demo CRM list
             const list = document.getElementById('customer-list');
             list.innerHTML = Object.keys(customers).map(phone => `
                 <tr class="border-b border-white hover:bg-white/50 transition">
