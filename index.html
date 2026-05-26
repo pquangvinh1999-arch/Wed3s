@@ -13,7 +13,7 @@
     
     <!-- SUPABASE SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- SHEETJS (Xuất Excel) -->
+    <!-- SHEETJS -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 
     <style>
@@ -117,7 +117,7 @@
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Tên khách hàng</label>
                     <input type="text" id="cus-name" placeholder="Nhập tên bạn" class="w-full px-4 py-3 rounded-xl border-none bg-white/80 ring-1 ring-sky-100 focus:ring-2 focus:ring-sky-500 outline-none font-bold">
                 </div>
-                <button onclick="toStep2()" class="w-full bg-sky-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-sky-200 hover:bg-sky-700 transition-all active:scale-95">TIẾP TỤC CHỌN DỊCH VỤ <i class="fa-solid fa-chevron-right ml-2"></i></button>
+                <button onclick="toStep2()" class="w-full bg-sky-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-sky-200 hover:bg-sky-700 transition-all active:scale-95">TIẾP TỤC CHỌN DỊC VỤ <i class="fa-solid fa-chevron-right ml-2"></i></button>
             </div>
         </div>
         <div id="step-2" class="hidden w-full max-w-4xl mt-6">
@@ -256,7 +256,7 @@
                         <h3 class="font-bold mb-4">Nhập Chi Phí</h3>
                         <div class="space-y-3">
                             <input type="text" id="cost-desc" placeholder="Mô tả chi phí..." class="w-full p-3 rounded-xl bg-white/50 ring-1 ring-sky-100 outline-none">
-                            <input type="number" id="cost-val" placeholder="Số tiền (₫)" class="w-//full p-3 rounded-xl bg-white/50 ring-1 ring-sky-100 outline-none">
+                            <input type="number" id="cost-val" placeholder="Số tiền (₫)" class="w-full p-3 rounded-xl bg-white/50 ring-1 ring-sky-100 outline-none">
                             <select id="cost-type" class="w-full p-3 rounded-xl bg-white/50 ring-1 ring-sky-100 outline-none">
                                 <option value="vattu">Vật tư tiêu hao</option>
                                 <option value="codinh">Vật tư cố định</option>
@@ -355,15 +355,16 @@
 
     <script>
         // ==========================================
-        // CONFIGURATION - ĐIỀN THÔNG TIN CỦA ANH VÀO ĐÂY
+        // CONFIGURATION - ĐIỀN THÔNG TIN SUPABASE
         // ==========================================
-        const SUPABASE_URL = 'https://agcvsogtqxoqlhcubghy.supabase.co/rest/v1/'; // Thay bằng URL dự án Supabase
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFnY3Zzb2d0cXhvcWxoY3ViZ2h5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDgyOTEsImV4cCI6MjA5NTMyNDI5MX0.V5N-RYin3us7SJCwTDA7Sg3OpZ5Thg6mYZGXi1XUj04'; // Thay bằng Anon Key
+        const SUPABASE_URL = 'https://agcvsogtqxoqlhcubghy.supabase.co'; // BỎ /rest/v1/
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFnY3Zzb2d0cXhvcWxoY3ViZ2h5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDgyOTEsImV4cCI6MjA5NTMyNDI5MX0.V5N-RYin3us7SJCwTDA7Sg3OpZ5Thg6mYZGXi1XUj04';
 
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // KHỞI TẠO CLIENT (Sửa lỗi xung đột tên biến)
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // -----------------------------------------------------
-        // 1. ROUTING & AUTH (BẢO MẬT SUPABASE)
+        // 1. ROUTING & AUTH
         // -----------------------------------------------------
         document.addEventListener("DOMContentLoaded", async () => {
             const params = new URLSearchParams(window.location.search);
@@ -371,13 +372,17 @@
                 document.getElementById('landing-view').classList.remove('hidden');
                 initSlideshow();
             } else {
-                // Kiểm tra phiên đăng nhập (Session) để ghi nhớ đăng nhập
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session) {
-                    document.getElementById('login-view').classList.add('hidden');
-                    document.getElementById('admin-view').classList.remove('hidden');
-                    updateDashboard();
-                } else {
+                try {
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (session) {
+                        document.getElementById('login-view').classList.add('hidden');
+                        document.getElementById('admin-view').classList.remove('hidden');
+                        updateDashboard();
+                    } else {
+                        document.getElementById('login-view').classList.remove('hidden');
+                    }
+                } catch (e) {
+                    console.error("Auth Error:", e);
                     document.getElementById('login-view').classList.remove('hidden');
                 }
             }
@@ -386,8 +391,7 @@
         async function doLogin() {
             const email = document.getElementById('user').value;
             const password = document.getElementById('pass').value;
-            
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
             if (error) {
                 alert('Sai tài khoản hoặc mật khẩu! ' + error.message);
@@ -399,12 +403,12 @@
         }
 
         async function logout() {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             location.reload();
         }
 
         // -----------------------------------------------------
-        // 2. LANDING PAGE LOGIC (GHI DỮ LIỆU VÀO SUPABASE)
+        // 2. LANDING PAGE LOGIC
         // -----------------------------------------------------
         let selectedServices = [];
         function toStep2() {
@@ -425,7 +429,6 @@
 
         async function submitOrder() {
             if(selectedServices.length === 0) return alert("Anh chọn ít nhất 1 dịch vụ nhé!");
-            
             const orderData = {
                 customer_name: document.getElementById('cus-name').value,
                 phone: document.getElementById('cus-phone').value,
@@ -434,14 +437,11 @@
                 status: 'Chờ nhận đơn',
                 created_at: new Date().toISOString()
             };
-
             try {
-                const { error } = await supabase.from('orders').insert([orderData]);
+                const { error } = await supabaseClient.from('orders').insert([orderData]);
                 if (error) throw error;
                 document.getElementById('success-modal').style.display = 'flex';
-            } catch (e) {
-                alert("Lỗi gửi đơn hàng: " + e.message);
-            }
+            } catch (e) { alert("Lỗi gửi đơn hàng: " + e.message); }
         }
 
         function initSlideshow() {
@@ -464,7 +464,7 @@
         }
 
         // -----------------------------------------------------
-        // 3. ADMIN LOGIC (READ/WRITE SUPABASE)
+        // 3. ADMIN LOGIC
         // -----------------------------------------------------
         function switchTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -479,18 +479,15 @@
         }
 
         async function updateDashboard() {
-            const { data: orders } = await supabase.from('orders').select('*');
-            const { data: costs } = await supabase.from('costs').select('*');
-            
+            const { data: orders } = await supabaseClient.from('orders').select('*');
+            const { data: costs } = await supabaseClient.from('costs').select('*');
             const totalRev = orders ? orders.reduce((a, b) => a + (b.total || 0), 0) : 0;
             const totalCost = costs ? costs.reduce((a, b) => a + b.amount, 0) : 0;
-            
             document.getElementById('kpi-total').innerText = totalRev.toLocaleString() + ' ₫';
             document.getElementById('kpi-cost').innerText = totalCost.toLocaleString() + ' ₫';
             document.getElementById('kpi-profit').innerText = (totalRev - totalCost).toLocaleString() + ' ₫';
             document.getElementById('kpi-day').innerText = (totalRev / 30).toLocaleString() + ' ₫';
             
-            // Xếp hạng dịch vụ
             const svcCount = {};
             orders?.forEach(o => {
                 o.services.split(', ').forEach(s => svcCount[s] = (svcCount[s] || 0) + 1);
@@ -500,7 +497,6 @@
                 `<li class="flex justify-between p-2 bg-white rounded-lg">${n} <span class="font-bold">${c} đơn</span></li>`
             ).join('');
 
-            // Xếp hạng khách hàng
             const cusCount = {};
             orders?.forEach(o => { cusCount[o.customer_name] = (cusCount[o.customer_name] || 0) + 1; });
             const sortedCus = Object.entries(cusCount).sort((a,b) => b[1] - a[1]).slice(0, 5);
@@ -512,7 +508,7 @@
         }
 
         async function updateOrders() {
-            const { data: orders } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+            const { data: orders } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
             const list = document.getElementById('order-list');
             list.innerHTML = orders.map((o, i) => `
                 <tr class="hover:bg-white/50 transition">
@@ -534,7 +530,7 @@
         }
 
         async function completeOrder(id) {
-            const { error } = await supabase.from('orders').update({ status: 'Đã hoàn thành' }).eq('id', id);
+            const { error } = await supabaseClient.from('orders').update({ status: 'Đã hoàn thành' }).eq('id', id);
             if(error) alert("Lỗi cập nhật đơn hàng!");
             else updateOrders();
         }
@@ -544,14 +540,13 @@
             const val = parseInt(document.getElementById('cost-val').value);
             const type = document.getElementById('cost-type').value;
             if(!desc || !val) return alert("Điền đủ chi phí!");
-            
-            const { error } = await supabase.from('costs').insert([{ description: desc, amount: val, type: type }]);
+            const { error } = await supabaseClient.from('costs').insert([{ description: desc, amount: val, type: type }]);
             if(error) alert("Lỗi ghi chi phí!");
             else updateFinance();
         }
 
         async function updateFinance() {
-            const { data: costs } = await supabase.from('costs').select('*').order('created_at', { ascending: false });
+            const { data: costs } = await supabaseClient.from('costs').select('*').order('created_at', { ascending: false });
             const list = document.getElementById('cost-list');
             let total = 0;
             list.innerHTML = costs.map(c => {
@@ -568,7 +563,7 @@
         }
 
         async function updateCRM() {
-            const { data: orders } = await supabase.from('orders').select('*');
+            const { data: orders } = await supabaseClient.from('orders').select('*');
             const customers = {};
             orders.forEach(o => {
                 if(!customers[o.phone]) customers[o.phone] = {name: o.customer_name, count: 0, total: 0};
@@ -674,17 +669,6 @@
             printWindow.document.write(`<html><head><title>In hóa đơn 3S</title><style>body{width:58mm; font-family:monospace; padding:0; margin:0;}</style></head><body>${invContent}</body></html>`);
             printWindow.document.close();
             printWindow.print();
-        }
-
-        // EXCEL EXPORT MODULE
-        async function exportToExcel(tableName, fileName) {
-            const { data } = await supabase.from(tableName).select('*');
-            if(!data || data.length === 0) return alert("Không có dữ liệu để xuất!");
-            
-            const worksheet = XLSX.utils.json_to_sheet(data);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-            XLSX.writeFile(workbook, `${fileName}.xlsx`);
         }
 
         function initCharts(rev, cost) {
